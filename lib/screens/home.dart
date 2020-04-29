@@ -10,12 +10,19 @@ class Home extends StatelessWidget {
             appBar: AppBar(title: Text("Home")),
             body:
                 Center(child: Consumer<Model>(builder: (context, model, child) {
-              return MaterialButton(
-                child: Text("Log out", style: TextStyle(color: Colors.white)),
-                color: Colors.blue,
-                onPressed: () {
-                  model.logout();
-                },
+              return Column(
+                children: <Widget>[
+                  Text('Nombre${model.username}'),
+                  Text('Nombre${model.name}'),
+                  MaterialButton(
+                    child:
+                        Text("Log out", style: TextStyle(color: Colors.white)),
+                    color: Colors.blue,
+                    onPressed: () {
+                      model.logout();
+                    },
+                  ),
+                ],
               );
             }))));
   }

@@ -9,14 +9,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<Model>(
-        create: (context) => Model(logged: false),
+        create: (context) => Model(),
         child: Consumer<Model>(builder: (context, model, child) {
           return FutureBuilder(
               future: getPrefs(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (snapshot.hasData) {
                   final isLogged = snapshot.data;
-                  model.logged = isLogged;
                   return isLogged ? Home() : Login();
                 }
 
@@ -27,6 +26,6 @@ class MyApp extends StatelessWidget {
 
   Future<bool> getPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool("logged");
+    return prefs.getBool("logged") ?? false;
   }
 }

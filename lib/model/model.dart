@@ -1,41 +1,82 @@
+import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class Model extends ChangeNotifier {
-  bool logged;
   String username;
-  String password;
+  String name;
+  String token;
+  bool logged;
 
-  Model({this.logged, this.username, this.password});
+  Model({this.token, this.username, this.name});
 
-  loggin(String username, String password) async {
-    if (username == this.username && password == this.password) {
-      logged = true;
-      await cacheIt();
-      notifyListeners();
-    }
+  factory Model.fromJson(Map<String, dynamic> json) {
+    return Model(
+        token: json['token'], username: json['username'], name: json['name']);
   }
 
-  signup(String username, String password) async {
-    this.username = username;
-    this.password = password;
-    //loggin(this.username, this.password);
+  update() {
+    notifyListeners();
+  }
+
+  Future<Model> login(String email, String password) async {
+    final http.Response response = await http.post(
+        "https://movil-api.herokuapp.com/signin",
+        headers: <String, String>{
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+        body:
+            jsonEncode(<String, String>{'email': email, 'password': password}));
+
+    if (response.statusCode != 200) {
+      return throw Exception(response.body);
+    }
+
+    return Model.fromJson(json.decode(response.body));
+  }
+
+  Future<Model> signup(
+      String username, String password, String email, String name) async {
+    final http.Response response = await http.post(
+        "https://movil-api.herokuapp.com/signup",
+        headers: <String, String>{
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+        body: jsonEncode(<String, String>{
+          'email': email,
+          'username': username,
+          'password': password,
+          'name': name
+        }));
+
+    if (response.statusCode != 200) {
+      return throw Exception(response.body);
+    }
+
+    return Model.fromJson(json.decode(response.body));
   }
 
   // Caches logging information
-  cacheIt() async {
+  cacheIt(String username, String name, String token) async {
+    logged = true;
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("logged", this.logged);
+    await prefs.setBool("logged", true);
+    await prefs.setString("username", username);
+    await prefs.setString("name", name);
+    await prefs.setString("token", token);
+
+    notifyListeners();
   }
 
   logout() async {
     logged = false;
-    await cacheIt();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove("logged");
+    await prefs.remove("username");
+    await prefs.remove("name");
+    await prefs.remove("token");
     notifyListeners();
-  }
-
-  register(String username, String password) {
-    this.username = username;
-    this.password = password;
   }
 }

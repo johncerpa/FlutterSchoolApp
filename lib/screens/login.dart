@@ -9,7 +9,7 @@ class Login extends StatefulWidget {
 
 class LoginState extends State<Login> {
   final _key = GlobalKey<FormState>();
-  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   @override
@@ -28,8 +28,8 @@ class LoginState extends State<Login> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       TextFormField(
-                        controller: usernameController,
-                        decoration: InputDecoration(hintText: "Username"),
+                        controller: emailController,
+                        decoration: InputDecoration(hintText: "Email"),
                         // The validator receives the text that the user has entered.
                         validator: (value) {
                           if (value.isEmpty) {
@@ -58,10 +58,24 @@ class LoginState extends State<Login> {
                           style: TextStyle(color: Colors.white),
                         ),
                         color: Colors.blue,
-                        onPressed: () {
+                        onPressed: () async {
                           if (_key.currentState.validate()) {
-                            model.loggin(usernameController.text,
-                                passwordController.text);
+                            String email = emailController.text;
+                            String password = passwordController.text;
+
+                            model = await model
+                                .login(email, password)
+                                .then((user) async {
+                              await model.cacheIt(
+                                  user.username, user.name, user.token);
+                              return user;
+                            }).catchError((error) {
+                              Scaffold.of(context).showSnackBar(
+                                  SnackBar(content: Text(error.toString())));
+                              return model;
+                            });
+
+                            model.update();
                           }
                         },
                       ),
