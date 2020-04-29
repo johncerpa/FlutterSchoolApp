@@ -86,19 +86,16 @@ class SignUpState extends State<SignUp> {
                           String email = emailController.text;
                           String name = nameController.text;
 
-                          model = await model
+                          await model
                               .signup(username, password, email, name)
                               .then((user) async {
-                            await model.cacheIt(
-                                user.username, user.name, user.token);
-                            return user;
+                            await model.cacheIt(user);
+                            await model.update(user);
                           }).catchError((error) {
                             Scaffold.of(context).showSnackBar(
                                 SnackBar(content: Text(error.toString())));
                             return model;
                           });
-
-                          model.update();
                         }
                       },
                     )

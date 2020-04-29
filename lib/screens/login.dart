@@ -1,6 +1,7 @@
 import 'package:login/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:login/screens/signup.dart';
+
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
@@ -63,19 +64,16 @@ class LoginState extends State<Login> {
                             String email = emailController.text;
                             String password = passwordController.text;
 
-                            model = await model
+                            await model
                                 .login(email, password)
                                 .then((user) async {
-                              await model.cacheIt(
-                                  user.username, user.name, user.token);
-                              return user;
+                              await model.cacheIt(user);
+                              await model.update(user);
                             }).catchError((error) {
                               Scaffold.of(context).showSnackBar(
                                   SnackBar(content: Text(error.toString())));
-                              return model;
+                              return;
                             });
-
-                            model.update();
                           }
                         },
                       ),

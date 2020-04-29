@@ -16,7 +16,10 @@ class Model extends ChangeNotifier {
         token: json['token'], username: json['username'], name: json['name']);
   }
 
-  update() {
+  update(Model user) {
+    this.username = user.username;
+    this.name = user.name;
+    this.token = user.token;
     notifyListeners();
   }
 
@@ -58,14 +61,14 @@ class Model extends ChangeNotifier {
   }
 
   // Caches logging information
-  cacheIt(String username, String name, String token) async {
+  cacheIt(Model user) async {
     logged = true;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool("logged", true);
-    await prefs.setString("username", username);
-    await prefs.setString("name", name);
-    await prefs.setString("token", token);
+    await prefs.setString("username", user.username);
+    await prefs.setString("name", user.name);
+    await prefs.setString("token", user.token);
 
     notifyListeners();
   }
