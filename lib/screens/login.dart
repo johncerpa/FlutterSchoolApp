@@ -22,7 +22,7 @@ class LoginState extends State<Login> {
         appBar: AppBar(title: Text("Log in")),
         body: Center(
           child: Consumer<Model>(builder: (context, model, child) {
-            return Container( 
+            return Container(
               margin: new EdgeInsets.only(left: 20.0, right: 20.0),
               child: Form(
                   key: _key,
@@ -32,7 +32,8 @@ class LoginState extends State<Login> {
                     children: <Widget>[
                       TextFormField(
                         controller: emailController,
-                        decoration: InputDecoration(hintText: "Email",prefixIcon: Icon(Icons.email)),
+                        decoration: InputDecoration(
+                            hintText: "Email", prefixIcon: Icon(Icons.email)),
                         // The validator receives the text that the user has entered.
                         validator: (value) {
                           if (value.isEmpty) {
@@ -45,7 +46,9 @@ class LoginState extends State<Login> {
                       TextFormField(
                         controller: passwordController,
                         obscureText: true,
-                        decoration: InputDecoration(hintText: "Password",prefixIcon: Icon(Icons.security)),
+                        decoration: InputDecoration(
+                            hintText: "Password",
+                            prefixIcon: Icon(Icons.security)),
                         // The validator receives the text that the user has entered.
                         validator: (value) {
                           if (value.isEmpty) {
@@ -89,6 +92,11 @@ class LoginState extends State<Login> {
                                                       error
                                                           .toString()
                                                           .length))));
+                                      return;
+                                    }).timeout(Duration(seconds: 5),
+                                            onTimeout: () {
+                                      Scaffold.of(context).showSnackBar(
+                                          SnackBar(content: Text("Time out")));
                                       return;
                                     });
                                   }

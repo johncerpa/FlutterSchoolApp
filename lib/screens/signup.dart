@@ -101,7 +101,10 @@ class SignUpState extends State<SignUp> {
                                     error.toString().indexOf(":") + 1,
                                     error.toString().length))));
                             return;
-                          });
+                          }).timeout(Duration(seconds:5),onTimeout:(){
+                             Scaffold.of(context).showSnackBar(SnackBar(
+                                content: Text("Time out")));
+                            return; }) ;
                         }
                       },
                     )
