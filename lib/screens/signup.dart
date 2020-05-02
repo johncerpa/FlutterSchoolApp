@@ -29,8 +29,33 @@ class SignUpState extends State<SignUp> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     TextFormField(
-                      controller: usernameController,
-                      decoration: InputDecoration(hintText: "Username"),
+                       controller: nameController,
+                      decoration: InputDecoration(hintText: "Name",prefixIcon: Icon(Icons.perm_identity)),
+              
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 20.0),
+                    TextFormField(
+                              controller: usernameController,
+                      decoration: InputDecoration(hintText: "Username",prefixIcon: Icon(Icons.account_box)),
+                      
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 20.0),
+                    TextFormField(
+                      
+                     controller: emailController,
+                      decoration: InputDecoration(hintText: "Email",prefixIcon: Icon(Icons.email)),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter some text';
@@ -42,36 +67,15 @@ class SignUpState extends State<SignUp> {
                     TextFormField(
                       controller: passwordController,
                       obscureText: true,
-                      decoration: InputDecoration(hintText: "Password"),
+                      decoration: InputDecoration(hintText: "Password",prefixIcon: Icon(Icons.security)),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter some text';
                         }
                         return null;
                       },
-                    ),
-                    SizedBox(height: 20.0),
-                    TextFormField(
-                      controller: emailController,
-                      decoration: InputDecoration(hintText: "Email"),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 20.0),
-                    TextFormField(
-                      controller: nameController,
-                      decoration: InputDecoration(hintText: "Name"),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;
-                      },
-                    ),
+                    )
+                    ,
                     SizedBox(height: 20.0),
                     MaterialButton(
                       child: Text(
@@ -92,9 +96,11 @@ class SignUpState extends State<SignUp> {
                             await model.cacheIt(user);
                             await model.update(user);
                           }).catchError((error) {
-                            Scaffold.of(context).showSnackBar(
-                                SnackBar(content: Text(error.toString())));
-                            return model;
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                                content: Text(error.toString().substring(
+                                    error.toString().indexOf(":") + 1,
+                                    error.toString().length))));
+                            return;
                           });
                         }
                       },
