@@ -33,9 +33,8 @@ class Model extends ChangeNotifier {
             jsonEncode(<String, String>{'email': email, 'password': password}));
 
     if (response.statusCode != 200) {
-      Map mapREf=json.decode(response.body);
-     
-      return throw Exception(mapREf['error'].toString());
+      Map ref = json.decode(response.body);
+      return throw Exception(ref['error'].toString());
     }
 
     return Model.fromJson(json.decode(response.body));
@@ -56,9 +55,8 @@ class Model extends ChangeNotifier {
         }));
 
     if (response.statusCode != 200) {
-         Map mapREf=json.decode(response.body);
-     
-      return throw Exception(mapREf['error'].toString());
+      Map ref = json.decode(response.body);
+      return throw Exception(ref['error'].toString());
     }
 
     return Model.fromJson(json.decode(response.body));

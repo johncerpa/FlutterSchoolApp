@@ -26,15 +26,19 @@ class MyApp extends StatelessWidget {
 
   Future<bool> getPrefs(Model user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool v=prefs.getBool("logged") ?? false;
-    Model user2= new Model();
-    if(v){
 
-      user2.name=prefs.get("name");
-      user2.username=prefs.get("username");
-      user2.token=prefs.get("token");
-      user.update(user2);
+    bool isLogged = prefs.getBool("logged") ?? false;
+
+    if (isLogged) {
+      String token = prefs.get("token");
+      String username = prefs.get("username");
+      String name = prefs.get("name");
+
+      Model userInfo = new Model(token: token, username: username, name: name);
+
+      user.update(userInfo);
     }
-    return prefs.getBool("logged") ?? false;
+
+    return isLogged;
   }
 }
