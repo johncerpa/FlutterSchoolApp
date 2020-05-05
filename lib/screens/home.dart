@@ -15,6 +15,8 @@ class _HomeState extends State<Home> {
         home: Scaffold(
       appBar: AppBar(title: Text("Home")),
       body: Center(child: Consumer<Model>(builder: (context, model, child) {
+        checkToken(model, context);
+
         return Container(
           margin: new EdgeInsets.only(left: 20.0, right: 20.0),
           child: Column(
@@ -37,6 +39,14 @@ class _HomeState extends State<Home> {
       })),
       floatingActionButton: _floatButton(),
     ));
+  }
+
+  checkToken(Model model, BuildContext context) async {
+    var response = await Model.checkToken(model.token);
+    if (!response["valid"]) {
+      snackbar(context, "Token is not valid anymore, log in again.");
+      model.logout();
+    }
   }
 
   Widget _futureList(Model model) {

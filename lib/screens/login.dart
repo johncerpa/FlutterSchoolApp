@@ -62,7 +62,7 @@ class LoginState extends State<Login> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          loginButton(model),
+                          loginButton(model, context),
                           signUpButton(context),
                         ],
                       ),
@@ -76,14 +76,17 @@ class LoginState extends State<Login> {
   }
 
   snackbar(BuildContext context, String message) {
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 2),
+    ));
   }
 
-  void loginLogic(Model model) async {
+  void loginLogic(Model model, BuildContext originalContext) async {
     String email = emailController.text;
     String password = passwordController.text;
 
-    await model.login(email, password).then((user) async {
+    await Model.login(email, password).then((user) async {
       if (staySignedIn) {
         await model.cacheIt(user);
       }
@@ -92,15 +95,15 @@ class LoginState extends State<Login> {
     }).catchError((error) {
       String errorMsg = error.toString().substring(
           error.toString().indexOf(":") + 1, error.toString().length);
-      snackbar(context, errorMsg);
+      snackbar(originalContext, errorMsg);
       return;
     }).timeout(Duration(seconds: 5), onTimeout: () {
-      snackbar(context, "Time out");
+      snackbar(originalContext, "Time out");
       return;
     });
   }
 
-  Widget loginButton(Model model) {
+  Widget loginButton(Model model, BuildContext originalContext) {
     return Container(
         margin: new EdgeInsets.only(right: 10.0),
         child: MaterialButton(
@@ -110,8 +113,9 @@ class LoginState extends State<Login> {
           ),
           color: Colors.blue,
           onPressed: () async {
+            snackbar(originalContext, "Loging in...");
             if (_key.currentState.validate()) {
-              loginLogic(model);
+              loginLogic(model, originalContext);
             }
           },
         ));

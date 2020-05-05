@@ -23,10 +23,11 @@ class Model extends ChangeNotifier {
       token: json['token'],
       username: json['username'],
       name: json['name'],
+      logged: true,
     );
   }
 
-  Future<Model> login(String email, String password) async {
+  static Future<Model> login(String email, String password) async {
     final http.Response response = await http.post(
         "https://movil-api.herokuapp.com/signin",
         headers: <String, String>{
@@ -43,7 +44,7 @@ class Model extends ChangeNotifier {
     return Model.fromJson(json.decode(response.body));
   }
 
-  Future<Model> signup(
+  static Future<Model> signup(
       String username, String password, String email, String name) async {
     final http.Response response = await http.post(
         "https://movil-api.herokuapp.com/signup",
@@ -66,32 +67,33 @@ class Model extends ChangeNotifier {
   }
 
   update(Model user) async {
-    logged = true;
+    logged = user.logged;
     username = user.username;
     name = user.name;
     token = user.token;
-    await getCourses();
     notifyListeners();
   }
 
   // Caches logging information
   cacheIt(Model user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("logged", true);
+    await prefs.setBool("logged", user.logged);
     await prefs.setString("username", user.username);
     await prefs.setString("name", user.name);
     await prefs.setString("token", user.token);
   }
 
-  logout() async {
-    logged = false;
-
+  decache() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove("logged");
     await prefs.remove("username");
     await prefs.remove("name");
     await prefs.remove("token");
+  }
 
+  logout() async {
+    logged = false;
+    await decache();
     notifyListeners();
   }
 
@@ -114,16 +116,28 @@ class Model extends ChangeNotifier {
   }
 
   addCourse() async {
-    Uri uri = Uri.https("movil-api.herokuapp.com", '${this.username}/courses');
+    Uri uri = Uri.https("movil-api.herokuapp.com", '$username/courses');
+
     final http.Response response = await http.post(
       uri,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: "Bearer " + this.token,
+        HttpHeaders.authorizationHeader: 'Bearer $token'
       },
     );
 
     notifyListeners();
     return response.statusCode == 200;
+  }
+
+  static checkToken(String token) async {
+    Uri uri = Uri.https("movil-api.herokuapp.com", 'check/token');
+    final http.Response response = await http.post(uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+        body: jsonEncode(<String, String>{'token': token}));
+
+    return jsonDecode(response.body);
   }
 }

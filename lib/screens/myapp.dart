@@ -33,8 +33,10 @@ class MyApp extends StatelessWidget {
       String username = prefs.get("username");
       String name = prefs.get("name");
 
-      Model userInfo = new Model(token: token, username: username, name: name);
-      user.update(userInfo);
+      Model userInfo =
+          Model(token: token, username: username, name: name, logged: true);
+
+      await user.update(userInfo);
     }
 
     return isLogged;

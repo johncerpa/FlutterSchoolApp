@@ -79,7 +79,7 @@ class SignUpState extends State<SignUp> {
                       },
                     ),
                     SizedBox(height: 20.0),
-                    loginButton(model),
+                    loginButton(model, context),
                   ],
                 )),
           );
@@ -92,7 +92,7 @@ class SignUpState extends State<SignUp> {
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Widget loginButton(Model model) {
+  Widget loginButton(Model model, BuildContext originalContext) {
     return MaterialButton(
       child: Text(
         "Sign up",
@@ -106,18 +106,17 @@ class SignUpState extends State<SignUp> {
           String email = emailController.text;
           String name = nameController.text;
 
-          await model
-              .signup(username, password, email, name)
+          await Model.signup(username, password, email, name)
               .then((user) async {
             await model.cacheIt(user);
             await model.update(user);
           }).catchError((error) {
             String errorMsg = error.toString().substring(
                 error.toString().indexOf(":") + 1, error.toString().length);
-            snackbar(context, errorMsg);
+            snackbar(originalContext, errorMsg);
             return;
           }).timeout(Duration(seconds: 5), onTimeout: () {
-            snackbar(context, "Time out");
+            snackbar(originalContext, "Time out");
             return;
           });
         }
