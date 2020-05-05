@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
         create: (context) => Model(),
         child: Consumer<Model>(builder: (context, model, child) {
           return FutureBuilder(
-              future: getPrefs(),
+              future: getPrefs(model),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (snapshot.hasData) {
                   final isLogged = snapshot.data;
@@ -24,8 +24,17 @@ class MyApp extends StatelessWidget {
         }));
   }
 
-  Future<bool> getPrefs() async {
+  Future<bool> getPrefs(Model user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool v=prefs.getBool("logged") ?? false;
+    Model user2= new Model();
+    if(v){
+
+      user2.name=prefs.get("name");
+      user2.username=prefs.get("username");
+      user2.token=prefs.get("token");
+      user.update(user2);
+    }
     return prefs.getBool("logged") ?? false;
   }
 }

@@ -56,7 +56,7 @@ class LoginState extends State<Login> {
                           }
                           return null;
                         },
-                      ),
+                      ),SizedBox(height: 20.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
