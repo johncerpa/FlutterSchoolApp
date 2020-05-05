@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:login/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:login/screens/signup.dart';
-
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
@@ -14,6 +11,7 @@ class LoginState extends State<Login> {
   final _key = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool staySignedIn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -56,65 +54,16 @@ class LoginState extends State<Login> {
                           }
                           return null;
                         },
-                      ),SizedBox(height: 20.0),
+                      ),
+                      SizedBox(height: 20.0),
+                      checkbox(),
+                      SizedBox(height: 20.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          Container(
-                              margin: new EdgeInsets.only(right: 10.0),
-                              child: MaterialButton(
-                                child: Text(
-                                  "Log in",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                color: Colors.blue,
-                                onPressed: () async {
-                                  if (_key.currentState.validate()) {
-                                    String email = emailController.text;
-                                    String password = passwordController.text;
-
-                                    await model
-                                        .login(email, password)
-                                        .then((user) async {
-                                      await model.cacheIt(user);
-                                      await model.update(user);
-                                    }).catchError((error) {
-                                      Scaffold.of(context).showSnackBar(
-                                          SnackBar(
-                                              content: Text(error
-                                                  .toString()
-                                                  .substring(
-                                                      error
-                                                              .toString()
-                                                              .indexOf(":") +
-                                                          1,
-                                                      error
-                                                          .toString()
-                                                          .length))));
-                                      return;
-                                    }).timeout(Duration(seconds: 5),
-                                            onTimeout: () {
-                                      Scaffold.of(context).showSnackBar(
-                                          SnackBar(content: Text("Time out")));
-                                      return;
-                                    });
-                                  }
-                                },
-                              )),
-                          InkWell(
-                            // When the user taps the button, show a snackbar.
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SignUp()));
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(12.0),
-                              child: Text('Sign Up'),
-                            ),
-                          )
+                          loginButton(model),
+                          signUpButton(context),
                         ],
                       ),
                     ],
@@ -123,6 +72,75 @@ class LoginState extends State<Login> {
           }),
         ),
       ),
+    );
+  }
+
+  snackbar(BuildContext context, String message) {
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void loginLogic(Model model) async {
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    await model.login(email, password).then((user) async {
+      if (staySignedIn) {
+        await model.cacheIt(user);
+      }
+
+      await model.update(user);
+    }).catchError((error) {
+      String errorMsg = error.toString().substring(
+          error.toString().indexOf(":") + 1, error.toString().length);
+      snackbar(context, errorMsg);
+      return;
+    }).timeout(Duration(seconds: 5), onTimeout: () {
+      snackbar(context, "Time out");
+      return;
+    });
+  }
+
+  Widget loginButton(Model model) {
+    return Container(
+        margin: new EdgeInsets.only(right: 10.0),
+        child: MaterialButton(
+          child: Text(
+            "Log in",
+            style: TextStyle(color: Colors.white),
+          ),
+          color: Colors.blue,
+          onPressed: () async {
+            if (_key.currentState.validate()) {
+              loginLogic(model);
+            }
+          },
+        ));
+  }
+
+  Widget signUpButton(BuildContext context) {
+    return InkWell(
+      // When the user taps the button, show a snackbar.
+      onTap: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SignUp()));
+      },
+      child: Container(
+        padding: EdgeInsets.all(12.0),
+        child: Text('Sign Up'),
+      ),
+    );
+  }
+
+  Widget checkbox() {
+    return CheckboxListTile(
+      title: const Text('Stay signed in'),
+      value: staySignedIn,
+      onChanged: (bool value) {
+        setState(() {
+          staySignedIn = value;
+        });
+      },
+      secondary: const Icon(Icons.account_box, color: Colors.grey),
     );
   }
 }

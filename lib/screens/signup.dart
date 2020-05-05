@@ -2,7 +2,6 @@ import 'package:login/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class SignUp extends StatefulWidget {
   SignUpState createState() => SignUpState();
 }
@@ -29,9 +28,10 @@ class SignUpState extends State<SignUp> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     TextFormField(
-                       controller: nameController,
-                      decoration: InputDecoration(hintText: "Name",prefixIcon: Icon(Icons.perm_identity)),
-              
+                      controller: nameController,
+                      decoration: InputDecoration(
+                          hintText: "Name",
+                          prefixIcon: Icon(Icons.perm_identity)),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter some text';
@@ -41,9 +41,10 @@ class SignUpState extends State<SignUp> {
                     ),
                     SizedBox(height: 20.0),
                     TextFormField(
-                              controller: usernameController,
-                      decoration: InputDecoration(hintText: "Username",prefixIcon: Icon(Icons.account_box)),
-                      
+                      controller: usernameController,
+                      decoration: InputDecoration(
+                          hintText: "Username",
+                          prefixIcon: Icon(Icons.account_box)),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter some text';
@@ -53,9 +54,9 @@ class SignUpState extends State<SignUp> {
                     ),
                     SizedBox(height: 20.0),
                     TextFormField(
-                      
-                     controller: emailController,
-                      decoration: InputDecoration(hintText: "Email",prefixIcon: Icon(Icons.email)),
+                      controller: emailController,
+                      decoration: InputDecoration(
+                          hintText: "Email", prefixIcon: Icon(Icons.email)),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter some text';
@@ -67,52 +68,60 @@ class SignUpState extends State<SignUp> {
                     TextFormField(
                       controller: passwordController,
                       obscureText: true,
-                      decoration: InputDecoration(hintText: "Password",prefixIcon: Icon(Icons.security)),
+                      decoration: InputDecoration(
+                          hintText: "Password",
+                          prefixIcon: Icon(Icons.security)),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter some text';
                         }
                         return null;
                       },
-                    )
-                    ,
+                    ),
                     SizedBox(height: 20.0),
-                    MaterialButton(
-                      child: Text(
-                        "Sign up",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      color: Colors.blue,
-                      onPressed: () async {
-                        if (_key.currentState.validate()) {
-                          String username = usernameController.text;
-                          String password = passwordController.text;
-                          String email = emailController.text;
-                          String name = nameController.text;
-
-                          await model
-                              .signup(username, password, email, name)
-                              .then((user) async {
-                            await model.cacheIt(user);
-                            await model.update(user);
-                          }).catchError((error) {
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                                content: Text(error.toString().substring(
-                                    error.toString().indexOf(":") + 1,
-                                    error.toString().length))));
-                            return;
-                          }).timeout(Duration(seconds:5),onTimeout:(){
-                             Scaffold.of(context).showSnackBar(SnackBar(
-                                content: Text("Time out")));
-                            return; }) ;
-                        }
-                      },
-                    )
+                    loginButton(model),
                   ],
                 )),
           );
         }),
       ),
+    );
+  }
+
+  snackbar(BuildContext context, String message) {
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Widget loginButton(Model model) {
+    return MaterialButton(
+      child: Text(
+        "Sign up",
+        style: TextStyle(color: Colors.white),
+      ),
+      color: Colors.blue,
+      onPressed: () async {
+        if (_key.currentState.validate()) {
+          String username = usernameController.text;
+          String password = passwordController.text;
+          String email = emailController.text;
+          String name = nameController.text;
+
+          await model
+              .signup(username, password, email, name)
+              .then((user) async {
+            await model.cacheIt(user);
+            await model.update(user);
+          }).catchError((error) {
+            String errorMsg = error.toString().substring(
+                error.toString().indexOf(":") + 1, error.toString().length);
+            snackbar(context, errorMsg);
+            return;
+          }).timeout(Duration(seconds: 5), onTimeout: () {
+            snackbar(context, "Time out");
+            return;
+          });
+        }
+      },
     );
   }
 }

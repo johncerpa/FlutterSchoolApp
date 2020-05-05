@@ -15,10 +15,8 @@ class MyApp extends StatelessWidget {
               future: getPrefs(model),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (snapshot.hasData) {
-                  final isLogged = snapshot.data;
-                  return isLogged ? Home() : Login();
+                  return model.logged ? Home() : Login();
                 }
-
                 return Login();
               });
         }));
@@ -29,13 +27,13 @@ class MyApp extends StatelessWidget {
 
     bool isLogged = prefs.getBool("logged") ?? false;
 
+    // If user is cached and logged in
     if (isLogged) {
       String token = prefs.get("token");
       String username = prefs.get("username");
       String name = prefs.get("name");
 
       Model userInfo = new Model(token: token, username: username, name: name);
-
       user.update(userInfo);
     }
 
