@@ -43,6 +43,7 @@ class _HomeState extends State<Home> {
 
   checkToken(Model model, BuildContext context) async {
     var response = await Model.checkToken(model.token);
+
     if (!response["valid"]) {
       snackbar(context, "Token is not valid anymore, log in again.");
       model.logout();
@@ -51,24 +52,21 @@ class _HomeState extends State<Home> {
 
   Widget _futureList(Model model) {
     return FutureBuilder(
-        future: getCourses(model),
+        future: model.getCourses(),
         builder: (BuildContext context, AsyncSnapshot<List<Course>> snapshot) {
           if (snapshot.hasData) {
             return _list(snapshot.data);
           } else if (snapshot.hasError) {
-            // Show error
+            return Center(
+              child: Text("No courses available"),
+            );
           } else {
+            print(snapshot.connectionState);
             return Center(
               child: CircularProgressIndicator(),
             );
           }
-          return Text("Courses");
         });
-  }
-
-  Future<List<Course>> getCourses(Model model) async {
-    List<Course> courses = await model.getCourses();
-    return courses;
   }
 
   Widget _list(List<Course> list) {

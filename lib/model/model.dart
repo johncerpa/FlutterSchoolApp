@@ -67,7 +67,7 @@ class Model extends ChangeNotifier {
   }
 
   update(Model user) async {
-    logged = user.logged;
+    logged = true;
     username = user.username;
     name = user.name;
     token = user.token;
@@ -75,9 +75,9 @@ class Model extends ChangeNotifier {
   }
 
   // Caches logging information
-  cacheIt(Model user) async {
+  cacheInfo(Model user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("logged", user.logged);
+    await prefs.setBool("logged", true);
     await prefs.setString("username", user.username);
     await prefs.setString("name", user.name);
     await prefs.setString("token", user.token);
@@ -97,8 +97,18 @@ class Model extends ChangeNotifier {
     notifyListeners();
   }
 
+  cacheEmail(String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("email", email);
+  }
+
+  uncacheEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove("email");
+  }
+
   Future<List<Course>> getCourses() async {
-    Uri uri = Uri.https("movil-api.herokuapp.com", '${this.username}/courses');
+    Uri uri = Uri.https("movil-api.herokuapp.com", '$username/courses');
 
     final http.Response response =
         await http.get(uri, headers: <String, String>{

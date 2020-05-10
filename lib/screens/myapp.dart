@@ -38,7 +38,6 @@ class MyApp extends StatelessWidget {
 
       await user.update(userInfo);
     }
-
     return isLogged;
   }
 }

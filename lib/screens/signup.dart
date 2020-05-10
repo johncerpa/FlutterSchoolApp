@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:login/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -79,7 +81,7 @@ class SignUpState extends State<SignUp> {
                       },
                     ),
                     SizedBox(height: 20.0),
-                    loginButton(model, context),
+                    signupButton(model, context),
                   ],
                 )),
           );
@@ -92,7 +94,7 @@ class SignUpState extends State<SignUp> {
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Widget loginButton(Model model, BuildContext originalContext) {
+  Widget signupButton(Model model, BuildContext originalContext) {
     return MaterialButton(
       child: Text(
         "Sign up",
@@ -100,22 +102,23 @@ class SignUpState extends State<SignUp> {
       ),
       color: Colors.blue,
       onPressed: () async {
+        snackbar(originalContext, "Signing up...");
         if (_key.currentState.validate()) {
           String username = usernameController.text;
           String password = passwordController.text;
           String email = emailController.text;
           String name = nameController.text;
 
-          await Model.signup(username, password, email, name)
-              .then((user) async {
-            await model.cacheIt(user);
-            await model.update(user);
+          Model.signup(username, password, email, name).then((user) {
+            Model.login(email, password).then((user) async {
+              await model.update(user);
+            });
           }).catchError((error) {
-            String errorMsg = error.toString().substring(
-                error.toString().indexOf(":") + 1, error.toString().length);
-            snackbar(originalContext, errorMsg);
+            String err = error.toString();
+            String msg = err.substring(err.indexOf(":") + 1, err.length);
+            snackbar(originalContext, msg);
             return;
-          }).timeout(Duration(seconds: 5), onTimeout: () {
+          }).timeout(Duration(seconds: 10), onTimeout: () {
             snackbar(originalContext, "Time out");
             return;
           });
