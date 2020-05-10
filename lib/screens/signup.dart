@@ -109,10 +109,8 @@ class SignUpState extends State<SignUp> {
           String email = emailController.text;
           String name = nameController.text;
 
-          Model.signup(username, password, email, name).then((user) {
-            Model.login(email, password).then((user) async {
-              await model.update(user);
-            });
+          Model.signup(username, password, email, name).then((user) async {
+            model.update(user);
           }).catchError((error) {
             String err = error.toString();
             String msg = err.substring(err.indexOf(":") + 1, err.length);

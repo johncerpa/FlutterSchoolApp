@@ -66,7 +66,7 @@ class Model extends ChangeNotifier {
     return Model.fromJson(json.decode(response.body));
   }
 
-  update(Model user) async {
+  update(Model user) {
     logged = true;
     username = user.username;
     name = user.name;
@@ -116,13 +116,15 @@ class Model extends ChangeNotifier {
       HttpHeaders.authorizationHeader: 'Bearer ' + this.token,
     });
 
+    List<Course> courses = List<Course>();
+
     if (response.statusCode == 200) {
-      return (jsonDecode(response.body) as List).map((i) {
+      courses = (jsonDecode(response.body) as List).map((i) {
         return Course.fromJson(i);
       }).toList();
     }
 
-    return null;
+    return courses;
   }
 
   addCourse() async {
