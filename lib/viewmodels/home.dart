@@ -14,11 +14,11 @@ class HomeModel extends BaseModel {
   final AuthenticationService _authService = locator<AuthenticationService>();
   User get user => _authService.user;
 
-  Future<List<Course>> getCourses() async {
+  Future<List<Course>> getCourses(String username, String token) async {
     setState(ViewState.Busy);
 
     await _cs
-        .getCourses(user.username, user.token)
+        .getCourses(username, token)
         .catchError((error) => Future.error(error));
 
     setState(ViewState.Idle);
@@ -26,14 +26,14 @@ class HomeModel extends BaseModel {
     return _cs.courses;
   }
 
-  addCourse() async {
+  addCourse(String username, String token) async {
     setState(ViewState.Busy);
-    await _cs.addCourse(user.username, user.token);
+    await _cs.addCourse(username, token);
     notifyListeners();
     setState(ViewState.Idle);
   }
 
-  checkToken() async {
-    return await _authService.checkToken();
+  checkToken(String token) async {
+    return await _authService.checkToken(token);
   }
 }

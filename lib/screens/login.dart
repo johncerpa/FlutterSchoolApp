@@ -78,7 +78,8 @@ class LoginState extends State<Login> {
               if (success) {
                 var provider =
                     Provider.of<AuthProvider>(originCtx, listen: false);
-                provider.setLoggedIn(model.user.username, model.user.token);
+                provider.setLoggedIn(
+                    model.user.username, model.user.name, model.user.token);
 
                 if (rememberMe) {
                   await provider.remember(email, password);

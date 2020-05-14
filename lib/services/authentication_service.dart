@@ -1,5 +1,4 @@
 import 'package:login/models/user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../locator.dart';
 import 'api.dart';
 
@@ -32,39 +31,8 @@ class AuthenticationService {
     return hasUser;
   }
 
-  Future<bool> logout() async {
-    decacheInfo();
-    return Future.value(true);
-  }
-
-  cacheInfo(User user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("logged", true);
-    await prefs.setString("username", user.username);
-    await prefs.setString("name", user.name);
-    await prefs.setString("token", user.token);
-  }
-
-  decacheInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove("logged");
-    await prefs.remove("username");
-    await prefs.remove("name");
-    await prefs.remove("token");
-  }
-
-  cacheEmail(String email) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString("email", email);
-  }
-
-  uncacheEmail() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove("email");
-  }
-
-  checkToken() async {
-    var res = await _api.checkToken(user.token);
+  checkToken(String token) async {
+    var res = await _api.checkToken(token);
     return res;
   }
 }

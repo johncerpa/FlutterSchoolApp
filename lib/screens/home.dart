@@ -12,30 +12,43 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  String _name;
+
   Widget build(BuildContext context) {
-    return BaseView<HomeModel>(builder: (context, model, child) {
-      checkToken(model, context);
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("Home"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.exit_to_app, color: Colors.white, size: 24.0),
-              onPressed: () {
-                Provider.of<AuthProvider>(context, listen: false).logout();
-              },
-            )
-          ],
-        ),
-        body: model.state == ViewState.Busy
-            ? Center(child: CircularProgressIndicator())
-            : _homeView(model, context),
-        floatingActionButton: _floatButton(model),
-      );
-    });
+    return BaseView<HomeModel>(
+        onModelReady: (model) => getData(context, model),
+        builder: (context, model, child) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text("Home"),
+              actions: <Widget>[
+                IconButton(
+                  icon:
+                      Icon(Icons.exit_to_app, color: Colors.white, size: 24.0),
+                  onPressed: () {
+                    Provider.of<AuthProvider>(context, listen: false).logout();
+                  },
+                )
+              ],
+            ),
+            body: model.state == ViewState.Busy
+                ? Center(child: CircularProgressIndicator())
+                : model.courses != null
+                    ? _homeView(model, context)
+                    : Center(child: CircularProgressIndicator()),
+            floatingActionButton: _floatButton(model, context),
+          );
+        });
+  }
+
+  getData(BuildContext context, HomeModel model) {
+    var provider = Provider.of<AuthProvider>(context, listen: false);
+    model.getCourses(provider.username, provider.token);
+    _name = provider.name;
   }
 
   Widget _homeView(HomeModel model, BuildContext context) {
+    checkToken(model, context);
     return Center(
         child: Container(
       margin: new EdgeInsets.only(left: 20.0, right: 20.0),
@@ -44,13 +57,13 @@ class _HomeState extends State<Home> {
         child: Column(
           children: <Widget>[
             Text(
-              'Welcome, ${model.user.name}',
+              'Welcome, $_name',
               style: TextStyle(fontSize: 40.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20.0),
             Text('These are your courses', style: TextStyle(fontSize: 16.0)),
             SizedBox(height: 20.0),
-            _futureList(model),
+            _list(model.courses),
           ],
         ),
       ),
@@ -58,23 +71,11 @@ class _HomeState extends State<Home> {
   }
 
   checkToken(HomeModel model, BuildContext authContext) async {
-    var response = await model.checkToken();
+    var provider = Provider.of<AuthProvider>(authContext, listen: false);
+    var response = await model.checkToken(provider.token);
     if (!response["valid"]) {
       Provider.of<AuthProvider>(authContext, listen: false).logout();
     }
-  }
-
-  Widget _futureList(HomeModel model) {
-    return FutureBuilder(
-        future: model.getCourses(),
-        builder: (BuildContext context, AsyncSnapshot<List<Course>> snapshot) {
-          if (snapshot.hasData) {
-            return _list(snapshot.data);
-          }
-          return Center(
-            child: Text(""),
-          );
-        });
   }
 
   Widget _list(List<Course> list) {
@@ -96,9 +97,10 @@ class _HomeState extends State<Home> {
                 "Professor: ${element.professor}, Students: ${element.students}")));
   }
 
-  Widget _floatButton(HomeModel model) {
+  Widget _floatButton(HomeModel model, BuildContext ctx) {
+    var provider = Provider.of<AuthProvider>(ctx, listen: false);
     return FloatingActionButton(
-        onPressed: () => model.addCourse(),
+        onPressed: () => model.addCourse(provider.username, provider.token),
         tooltip: 'Add course',
         child: new Icon(Icons.add));
   }
