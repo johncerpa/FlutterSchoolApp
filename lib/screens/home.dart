@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:login/model/Course.dart';
-import 'package:login/model/model.dart';
+import 'package:login/base/model.dart';
+import 'package:login/base/view.dart';
+import 'package:login/models/course.dart';
+import 'package:login/viewmodels/auth_provider.dart';
+import 'package:login/viewmodels/home.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -9,63 +12,68 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-      appBar: AppBar(title: Text("Home")),
-      body: Center(child: Consumer<Model>(builder: (context, model, child) {
-        checkToken(model, context);
+    return BaseView<HomeModel>(builder: (context, model, child) {
+      checkToken(model, context);
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Home"),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.exit_to_app, color: Colors.white, size: 24.0),
+              onPressed: () {
+                Provider.of<AuthProvider>(context, listen: false).logout();
+              },
+            )
+          ],
+        ),
+        body: model.state == ViewState.Busy
+            ? Center(child: CircularProgressIndicator())
+            : _homeView(model, context),
+        floatingActionButton: _floatButton(model),
+      );
+    });
+  }
 
-        return Container(
-          margin: new EdgeInsets.only(left: 20.0, right: 20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Username: ${model.username}',
-                style: TextStyle(fontSize: 24.0),
-              ),
-              SizedBox(height: 20.0),
-              Text('Name: ${model.name}', style: TextStyle(fontSize: 24.0)),
-              SizedBox(height: 20.0),
-              logoutButton(model),
-              SizedBox(height: 20.0),
-              _futureList(model),
-            ],
-          ),
-        );
-      })),
-      floatingActionButton: _floatButton(),
+  Widget _homeView(HomeModel model, BuildContext context) {
+    return Center(
+        child: Container(
+      margin: new EdgeInsets.only(left: 20.0, right: 20.0),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: Column(
+          children: <Widget>[
+            Text(
+              'Welcome, ${model.user.name}',
+              style: TextStyle(fontSize: 40.0, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20.0),
+            Text('These are your courses', style: TextStyle(fontSize: 16.0)),
+            SizedBox(height: 20.0),
+            _futureList(model),
+          ],
+        ),
+      ),
     ));
   }
 
-  checkToken(Model model, BuildContext context) async {
-    var response = await Model.checkToken(model.token);
-
+  checkToken(HomeModel model, BuildContext authContext) async {
+    var response = await model.checkToken();
     if (!response["valid"]) {
-      snackbar(context, "Token is not valid anymore, log in again.");
-      model.logout();
+      Provider.of<AuthProvider>(authContext, listen: false).logout();
     }
   }
 
-  Widget _futureList(Model model) {
+  Widget _futureList(HomeModel model) {
     return FutureBuilder(
         future: model.getCourses(),
         builder: (BuildContext context, AsyncSnapshot<List<Course>> snapshot) {
           if (snapshot.hasData) {
             return _list(snapshot.data);
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text("No courses available"),
-            );
-          } else {
-            print(snapshot.connectionState);
-            return Center(
-              child: CircularProgressIndicator(),
-            );
           }
+          return Center(
+            child: Text(""),
+          );
         });
   }
 
@@ -88,33 +96,10 @@ class _HomeState extends State<Home> {
                 "Professor: ${element.professor}, Students: ${element.students}")));
   }
 
-  Widget _floatButton() {
-    return Consumer<Model>(builder: (context, model, child) {
-      return FloatingActionButton(
-          onPressed: () async {
-            bool response = await model.addCourse();
-            if (response) {
-              snackbar(context, "Course was added");
-            } else {
-              snackbar(context, "Error adding course");
-            }
-          },
-          tooltip: 'Add course',
-          child: new Icon(Icons.add));
-    });
-  }
-
-  Widget logoutButton(Model model) {
-    return MaterialButton(
-      child: Text("Log out", style: TextStyle(color: Colors.white)),
-      color: Colors.blue,
-      onPressed: () {
-        model.logout();
-      },
-    );
-  }
-
-  snackbar(BuildContext context, String message) {
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+  Widget _floatButton(HomeModel model) {
+    return FloatingActionButton(
+        onPressed: () => model.addCourse(),
+        tooltip: 'Add course',
+        child: new Icon(Icons.add));
   }
 }
