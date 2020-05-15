@@ -3,18 +3,38 @@ class Person {
   String name;
   String username;
   String email;
-  Person({this.id, this.name, this.username, this.email});
+  String phone;
+  String city;
+  String country;
+  String birthday;
+  Person(
+      {this.id,
+      this.name,
+      this.username,
+      this.email,
+      this.phone,
+      this.city,
+      this.country,
+      this.birthday});
 
   Person.initial()
       : id = 0,
         name = '',
         username = '',
-        email = '';
+        email = '',
+        phone = '',
+        city = '',
+        country = '',
+        birthday = '';
 
   Person.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     username = json['username'];
     email = json['email'];
+    phone = json['phone'];
+    city = json['city'];
+    country = json['country'];
+    birthday = json['birthday'];
   }
 }

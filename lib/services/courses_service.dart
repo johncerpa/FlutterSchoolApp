@@ -1,4 +1,5 @@
 import 'package:login/models/course.dart';
+import 'package:login/models/course_details.dart';
 import '../locator.dart';
 import 'api.dart';
 
@@ -14,5 +15,10 @@ class CourseService {
   Future addCourse(String username, String token) async {
     Course course = await _api.addCourse(username, token);
     _courses.add(course);
+  }
+
+  Future<CourseDetailsModel> courseDetails(
+      String username, String token, int courseId) async {
+    return await _api.courseDetail(username, token, courseId);
   }
 }

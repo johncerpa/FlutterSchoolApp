@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login/base/model.dart';
 import 'package:login/base/view.dart';
 import 'package:login/models/course.dart';
+import 'package:login/screens/course_details.dart';
 import 'package:login/viewmodels/auth_provider.dart';
 import 'package:login/viewmodels/home.dart';
 import 'package:provider/provider.dart';
@@ -33,9 +34,7 @@ class _HomeState extends State<Home> {
             ),
             body: model.state == ViewState.Busy
                 ? Center(child: CircularProgressIndicator())
-                : model.courses != null
-                    ? _homeView(model, context)
-                    : Center(child: CircularProgressIndicator()),
+                : _homeView(model, context),
             floatingActionButton: _floatButton(model, context),
           );
         });
@@ -51,7 +50,7 @@ class _HomeState extends State<Home> {
     checkToken(model, context);
     return Center(
         child: Container(
-      margin: new EdgeInsets.only(left: 20.0, right: 20.0),
+      margin: new EdgeInsets.only(left: 15.0, right: 15.0),
       child: Padding(
         padding: const EdgeInsets.only(top: 20.0),
         child: Column(
@@ -90,11 +89,34 @@ class _HomeState extends State<Home> {
   }
 
   Widget _item(Course element, int position) {
+    String lowercase = element.name.toLowerCase();
+    String courseCapitalized =
+        '${lowercase[0].toUpperCase()}${lowercase.substring(1)}';
+
     return Card(
-        child: ListTile(
-            title: Text(element.name),
-            subtitle: Text(
-                "Professor: ${element.professor}, Students: ${element.students}")));
+        child: Container(
+      padding: new EdgeInsets.all(5.0),
+      child: ListTile(
+        leading: Icon(Icons.book, size: 30.0),
+        title: Text(courseCapitalized,
+            style: TextStyle(fontWeight: FontWeight.w500)),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              "Professor: ${element.professor}",
+            ),
+            Text("Students: ${element.students}")
+          ],
+        ),
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => CourseDetails(
+                    courseId: element.id,
+                  )));
+        },
+      ),
+    ));
   }
 
   Widget _floatButton(HomeModel model, BuildContext ctx) {

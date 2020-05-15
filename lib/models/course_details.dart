@@ -1,21 +1,21 @@
 import 'package:login/models/person.dart';
 
-class CourseDetail {
+class CourseDetailsModel {
   final String name;
   final Person professor;
   final List<Person> students;
 
-  CourseDetail({this.name, this.professor, this.students});
+  CourseDetailsModel({this.name, this.professor, this.students});
 
-  CourseDetail.initial()
+  CourseDetailsModel.initial()
       : name = '',
         professor = Person.initial(),
         students = [];
 
-  factory CourseDetail.fromJson(Map<String, dynamic> json) {
+  factory CourseDetailsModel.fromJson(Map<String, dynamic> json) {
     List list = json['students'] as List;
     List<Person> studentList = list.map((i) => Person.fromJson(i)).toList();
-    return CourseDetail(
+    return CourseDetailsModel(
         name: json['name'],
         professor: Person.fromJson(json['professor']),
         students: studentList);
