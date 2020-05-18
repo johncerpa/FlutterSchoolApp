@@ -27,6 +27,7 @@ class LoginState extends State<Login> {
   }
 
   Widget _loginView(LoginModel model, BuildContext context) {
+    if (rememberMe) {}
     return Center(
         child: Container(
       margin: new EdgeInsets.only(left: 20.0, right: 20.0),
@@ -40,7 +41,7 @@ class LoginState extends State<Login> {
               SizedBox(height: 20.0),
               passwordInput(),
               SizedBox(height: 20.0),
-              rememberMeCheckbox(),
+              rememberMeCheckbox(context),
               SizedBox(height: 20.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -79,11 +80,12 @@ class LoginState extends State<Login> {
                 var provider =
                     Provider.of<AuthProvider>(originCtx, listen: false);
                 provider.setLoggedIn(
-                    model.user.username, model.user.name, model.user.token);
+                    model.user.username, model.user.name, model.user.token,rememberMe);
 
                 if (rememberMe) {
                   await provider.remember(email, password);
                 } else {
+                  
                   await provider.forget();
                 }
               }
@@ -106,14 +108,17 @@ class LoginState extends State<Login> {
     );
   }
 
-  Widget rememberMeCheckbox() {
+  Widget rememberMeCheckbox(BuildContext originCtx) {
     return CheckboxListTile(
       title: const Text('Remember me'),
       value: rememberMe,
       onChanged: (bool value) {
-        setState(() {
-          rememberMe = value;
-        });
+         var provider =Provider.of<AuthProvider>(originCtx, listen: false);
+         
+    
+          setState(() {
+            rememberMe=provider.changeRemember(value);
+          });
       },
       secondary: const Icon(Icons.memory, color: Colors.grey),
     );
@@ -124,10 +129,17 @@ class LoginState extends State<Login> {
         future: getEmailAndPassword(),
         builder: (BuildContext ctx, AsyncSnapshot s) {
           if (s.hasData) {
+            
             if (s.data.email.length > 0) {
-              emailController.text = s.data.email;
-              passwordController.text = s.data.password;
+              if(rememberMe){
+                emailController.text = s.data.email;
+                passwordController.text=s.data.password;
+              }
+                
+              
             }
+          } else {
+            emailController.text = "";
           }
 
           return TextFormField(
@@ -162,19 +174,22 @@ class LoginState extends State<Login> {
 
   getEmailAndPassword() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String email = prefs.getString("email") ?? "";
-    String password = prefs.getString("password") ?? "";
-
+    String email = await prefs.getString("email") ?? "";
+    String password = await prefs.getString("password") ?? "";
+    bool reme=prefs.get("remember")??false;
+    
+  
+    setState(() {
+      rememberMe=reme;
+    });
     // Checks the "Remember me" checkbox
-    if (email.length > 0) {
-      rememberMe = true;
-    }
-
-    return EmailPassword(email, password);
+  
+    return EmailPassword(email, password,reme);
   }
 }
 
 class EmailPassword {
   String email, password;
-  EmailPassword(this.email, this.password);
+  bool reme;
+  EmailPassword(this.email, this.password,this.reme);
 }

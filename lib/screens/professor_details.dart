@@ -33,41 +33,99 @@ class ProfessorDetails extends StatelessWidget {
 
   Widget _professorDetails(BuildContext context, Person professor) {
     return Center(
-        child: Container(
-      margin: new EdgeInsets.only(left: 15.0, right: 15.0),
-      child: Padding(
-          padding: const EdgeInsets.only(top: 20.0),
-          child: Column(
-            children: <Widget>[
-              Text("${professor.name}",
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0)),
-              SizedBox(
-                height: 20.0,
-              ),
-              Text("Email: ${professor.email}"),
-              SizedBox(
-                height: 20.0,
-              ),
-              Text("Username: ${professor.username}"),
-              SizedBox(
-                height: 20.0,
-              ),
-              Text("Phone: ${professor.phone}"),
-              SizedBox(
-                height: 20.0,
-              ),
-              Text("City: ${professor.city}"),
-              SizedBox(
-                height: 20.0,
-              ),
-              Text("Country: ${professor.country}"),
-              SizedBox(
-                height: 20.0,
-              ),
-              Text("Birthday: ${professor.birthday}"),
-            ],
-          )),
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Text("${professor.name}",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0)),
+        SizedBox(
+          height: 20.0,
+        ),
+        Container(
+          margin: const EdgeInsets.only(left: 20.0),
+          child: Align(
+              alignment: Alignment
+                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+
+              child: Align(
+                alignment: Alignment
+                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child: Text("Email: ${professor.email}"),
+              )),
+        ),
+        SizedBox(
+          height: 20.0,
+        ),
+        Container(
+          margin: const EdgeInsets.only(left: 20.0),
+          child: Align(
+              alignment: Alignment
+                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+              child: Align(
+                alignment: Alignment
+                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child: Text("Username: ${professor.username}"),
+              )),
+        ),
+        SizedBox(
+          height: 20.0,
+        ),
+        Container(
+          margin: const EdgeInsets.only(left: 20.0),
+          child: Align(
+              alignment: Alignment
+                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+              child: Align(
+                alignment: Alignment
+                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child: Text("Phone: ${professor.phone}"),
+              )),
+        ),
+        SizedBox(
+          height: 20.0,
+        ),
+        Container(
+          margin: const EdgeInsets.only(left: 20.0),
+          child: Align(
+              alignment: Alignment
+                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+              child: Align(
+                alignment: Alignment
+                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child: Text("City: ${professor.city}"),
+              )),
+        )
+        ,
+        SizedBox(
+          height: 20.0,
+        ),
+       Container(
+          margin: const EdgeInsets.only(left: 20.0),
+          child: Align(
+              alignment: Alignment
+                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+              child: Align(
+                alignment: Alignment
+                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child: Text("Country: ${professor.country}"),
+              )),
+        ),
+        SizedBox(
+          height: 20.0,
+        ),
+        Container(
+          margin: const EdgeInsets.only(left: 20.0),
+          child: Align(
+              alignment: Alignment
+                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+              child: Align(
+                alignment: Alignment
+                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child: Text("Birthday: ${professor.birthday}"),
+              )),
+        ),
+      ],
     ));
   }
 
