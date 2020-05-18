@@ -13,8 +13,13 @@ class CourseService {
   }
 
   Future addCourse(String username, String token) async {
-    Course course = await _api.addCourse(username, token);
-    _courses.add(course);
+    try {
+      Course course = await _api.addCourse(username, token);
+      _courses.add(course);
+      return true;
+    } catch (Exception) {
+      return false;
+    }
   }
 
   Future<CourseDetailsModel> courseDetails(

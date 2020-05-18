@@ -62,7 +62,7 @@ class _HomeState extends State<Home> {
               style: TextStyle(fontSize: 40.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20.0),
-            Text('These are your courses', style: TextStyle(fontSize: 16.0)),
+            Text('These are your courses', style: TextStyle(fontSize: 18.0)),
             SizedBox(height: 20.0),
             _list(model.courses),
           ],
@@ -78,9 +78,9 @@ class _HomeState extends State<Home> {
       _k.currentState.showSnackBar(SnackBar(
           content: Text("Session expired, you will be logged out",
               style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.yellow));
+          backgroundColor: Colors.red));
 
-      Future.delayed(const Duration(seconds: 4), () {
+      Future.delayed(const Duration(seconds: 6), () {
         Provider.of<AuthProvider>(authContext, listen: false).logout();
       });
     }
@@ -132,12 +132,22 @@ class _HomeState extends State<Home> {
     var provider = Provider.of<AuthProvider>(ctx, listen: false);
     return FloatingActionButton(
         onPressed: () {
-          model.addCourse(provider.username, provider.token).then((bool val) {
-            _k.currentState.showSnackBar(SnackBar(
-              content: Text("Course was added",
-                  style: TextStyle(color: Colors.white)),
-              backgroundColor: Colors.green,
-            ));
+          model
+              .addCourse(provider.username, provider.token)
+              .then((bool success) {
+            if (success) {
+              _k.currentState.showSnackBar(SnackBar(
+                content: Text("Course was added",
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: Colors.green,
+              ));
+            } else {
+              _k.currentState.showSnackBar(SnackBar(
+                content: Text("Can't add course, token is not valid anymore",
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: Colors.red,
+              ));
+            }
           });
         },
         tooltip: 'Add course',

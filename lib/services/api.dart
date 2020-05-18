@@ -79,6 +79,11 @@ class Api {
       },
     );
 
+    if (response.statusCode != 200) {
+      Map ref = json.decode(response.body);
+      return throw Exception(ref['error'].toString());
+    }
+
     return Course.fromJson(json.decode(response.body));
   }
 
@@ -95,7 +100,8 @@ class Api {
     );
 
     if (response.statusCode != 200) {
-      return Future.error(response.statusCode.toString());
+      Map ref = json.decode(response.body);
+      return throw Exception(ref['error'].toString());
     }
 
     return CourseDetailsModel.fromJson(json.decode(response.body));
@@ -113,7 +119,8 @@ class Api {
     );
 
     if (response.statusCode != 200) {
-      return Future.error(response.statusCode.toString());
+      Map ref = json.decode(response.body);
+      return throw Exception(ref['error'].toString());
     }
 
     return Person.fromJson(json.decode(response.body));
@@ -131,7 +138,8 @@ class Api {
     );
 
     if (response.statusCode != 200) {
-      return Future.error(response.statusCode.toString());
+      Map ref = json.decode(response.body);
+      return throw Exception(ref['error'].toString());
     }
 
     return Person.fromJson(json.decode(response.body));
@@ -149,7 +157,8 @@ class Api {
         }));
 
     if (response.statusCode != 200) {
-      return Future.error(response.statusCode.toString());
+      Map ref = json.decode(response.body);
+      return throw Exception(ref['error'].toString());
     }
 
     return Person.fromJson(json.decode(response.body));

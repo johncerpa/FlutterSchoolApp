@@ -28,10 +28,10 @@ class HomeModel extends BaseModel {
 
   Future<bool> addCourse(String username, String token) async {
     setState(ViewState.Busy);
-    await _cs.addCourse(username, token);
+    var response = await _cs.addCourse(username, token);
     notifyListeners();
     setState(ViewState.Idle);
-    return true;
+    return response;
   }
 
   checkToken(String token) async {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login/base/model.dart';
 import 'package:login/base/view.dart';
-import 'package:login/models/course_details.dart';
 import 'package:login/models/person.dart';
 import 'package:login/screens/professor_details.dart';
 import 'package:login/screens/student_details.dart';
@@ -11,7 +10,7 @@ import 'package:provider/provider.dart';
 
 class CourseDetails extends StatelessWidget {
   final int courseId;
-  GlobalKey<ScaffoldState> _k = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _k = GlobalKey<ScaffoldState>();
 
   CourseDetails({this.courseId});
 
@@ -25,20 +24,33 @@ class CourseDetails extends StatelessWidget {
           appBar: AppBar(title: Text("Course details")),
           body: model.state == ViewState.Busy
               ? Center(child: CircularProgressIndicator())
-              : _courseDetail(context, model.course),
+              : model.course != null
+                  ? _courseDetail(context, model)
+                  : Center(child: CircularProgressIndicator()),
           floatingActionButton: _floatingButton(context, model),
         );
       },
     );
   }
 
-  getData(BuildContext context, CourseViewModel model) {
+  getData(BuildContext context, CourseViewModel model) async {
     var provider = Provider.of<AuthProvider>(context, listen: false);
-    model.courseDetails(provider.username, provider.token, courseId);
+    var response =
+        await model.courseDetails(provider.username, provider.token, courseId);
+    if (!response) {
+      _k.currentState.showSnackBar(SnackBar(
+          content: Text("Session expired, log in again",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.red));
+
+      Future.delayed(Duration(seconds: 3), () {
+        Navigator.pop(context);
+      });
+    }
   }
 
-  Widget _courseDetail(BuildContext context, CourseDetailsModel course) {
-    String lowercase = course.name.toLowerCase();
+  Widget _courseDetail(BuildContext context, CourseViewModel model) {
+    String lowercase = model.course.name.toLowerCase();
     String courseCapitalized =
         '${lowercase[0].toUpperCase()}${lowercase.substring(1)}';
 
@@ -62,21 +74,22 @@ class CourseDetails extends StatelessWidget {
                         color: Colors.blue,
                         child: Container(
                           padding: const EdgeInsets.all(5.0),
-                          child: Text("Professor: ${course.professor.name}",
+                          child: Text(
+                              "Professor: ${model.course.professor.name}",
                               style: TextStyle(color: Colors.white)),
                         ),
                       ),
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => ProfessorDetails(
-                                  professorId: course.professor.id,
+                                  professorId: model.course.professor.id,
                                 )));
                       },
                     ),
                   ],
                 ),
               ),
-              _item(course.students)
+              _item(model.course.students)
             ],
           )),
     ));
@@ -115,12 +128,20 @@ class CourseDetails extends StatelessWidget {
         onPressed: () {
           model
               .addStudent(provider.username, provider.token, courseId)
-              .then((bool val) {
-            _k.currentState.showSnackBar(SnackBar(
-              content: Text("Student was added",
-                  style: TextStyle(color: Colors.white)),
-              backgroundColor: Colors.green,
-            ));
+              .then((bool success) {
+            if (success) {
+              _k.currentState.showSnackBar(SnackBar(
+                content: Text("Student was added",
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: Colors.green,
+              ));
+            } else {
+              _k.currentState.showSnackBar(SnackBar(
+                content: Text("Can't add student, token is not valid anymore",
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: Colors.red,
+              ));
+            }
           });
         },
         tooltip: 'Add student',
