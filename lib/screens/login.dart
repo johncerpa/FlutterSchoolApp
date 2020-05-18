@@ -79,13 +79,12 @@ class LoginState extends State<Login> {
               if (success) {
                 var provider =
                     Provider.of<AuthProvider>(originCtx, listen: false);
-                provider.setLoggedIn(
-                    model.user.username, model.user.name, model.user.token,rememberMe);
+                provider.setLoggedIn(model.user.username, model.user.name,
+                    model.user.token, rememberMe);
 
                 if (rememberMe) {
                   await provider.remember(email, password);
                 } else {
-                  
                   await provider.forget();
                 }
               }
@@ -113,12 +112,11 @@ class LoginState extends State<Login> {
       title: const Text('Remember me'),
       value: rememberMe,
       onChanged: (bool value) {
-         var provider =Provider.of<AuthProvider>(originCtx, listen: false);
-         
-    
-          setState(() {
-            rememberMe=provider.changeRemember(value);
-          });
+        var provider = Provider.of<AuthProvider>(originCtx, listen: false);
+
+        setState(() {
+          rememberMe = provider.changeRemember(value);
+        });
       },
       secondary: const Icon(Icons.memory, color: Colors.grey),
     );
@@ -129,14 +127,11 @@ class LoginState extends State<Login> {
         future: getEmailAndPassword(),
         builder: (BuildContext ctx, AsyncSnapshot s) {
           if (s.hasData) {
-            
             if (s.data.email.length > 0) {
-              if(rememberMe){
+              if (rememberMe) {
                 emailController.text = s.data.email;
-                passwordController.text=s.data.password;
+                passwordController.text = s.data.password;
               }
-                
-              
             }
           } else {
             emailController.text = "";
@@ -174,22 +169,20 @@ class LoginState extends State<Login> {
 
   getEmailAndPassword() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String email = await prefs.getString("email") ?? "";
-    String password = await prefs.getString("password") ?? "";
-    bool reme=prefs.get("remember")??false;
-    
-  
+    String email = prefs.getString("email") ?? "";
+    String password = prefs.getString("password") ?? "";
+    bool reme = prefs.getBool("remember") ?? false;
+
     setState(() {
-      rememberMe=reme;
+      rememberMe = reme;
     });
-    // Checks the "Remember me" checkbox
-  
-    return EmailPassword(email, password,reme);
+
+    return EmailPassword(email, password, reme);
   }
 }
 
 class EmailPassword {
   String email, password;
   bool reme;
-  EmailPassword(this.email, this.password,this.reme);
+  EmailPassword(this.email, this.password, this.reme);
 }
