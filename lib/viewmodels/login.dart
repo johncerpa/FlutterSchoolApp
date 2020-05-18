@@ -18,4 +18,9 @@ class LoginModel extends BaseModel {
 
     return response;
   }
+
+  setToIdle() {
+    notifyListeners();
+    setState(ViewState.Idle);
+  }
 }

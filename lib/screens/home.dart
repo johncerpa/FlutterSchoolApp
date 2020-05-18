@@ -14,12 +14,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String _name;
+  GlobalKey<ScaffoldState> _k = GlobalKey<ScaffoldState>();
 
   Widget build(BuildContext context) {
     return BaseView<HomeModel>(
         onModelReady: (model) => getData(context, model),
         builder: (context, model, child) {
           return Scaffold(
+            key: _k,
             appBar: AppBar(
               title: Text("Home"),
               actions: <Widget>[
@@ -122,7 +124,15 @@ class _HomeState extends State<Home> {
   Widget _floatButton(HomeModel model, BuildContext ctx) {
     var provider = Provider.of<AuthProvider>(ctx, listen: false);
     return FloatingActionButton(
-        onPressed: () => model.addCourse(provider.username, provider.token),
+        onPressed: () {
+          model.addCourse(provider.username, provider.token).then((bool val) {
+            _k.currentState.showSnackBar(SnackBar(
+              content: Text("Course was added",
+                  style: TextStyle(color: Colors.white)),
+              backgroundColor: Colors.green,
+            ));
+          });
+        },
         tooltip: 'Add course',
         child: new Icon(Icons.add));
   }

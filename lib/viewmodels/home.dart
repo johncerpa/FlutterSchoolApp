@@ -26,11 +26,12 @@ class HomeModel extends BaseModel {
     return _cs.courses;
   }
 
-  addCourse(String username, String token) async {
+  Future<bool> addCourse(String username, String token) async {
     setState(ViewState.Busy);
     await _cs.addCourse(username, token);
     notifyListeners();
     setState(ViewState.Idle);
+    return true;
   }
 
   checkToken(String token) async {

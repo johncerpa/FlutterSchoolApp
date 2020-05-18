@@ -16,14 +16,16 @@ class LoginState extends State<Login> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool rememberMe = false;
+  GlobalKey<ScaffoldState> k = GlobalKey<ScaffoldState>();
 
   Widget build(BuildContext ctx) {
     return BaseView<LoginModel>(
         builder: (context, model, child) => Scaffold(
+            key: k,
             appBar: AppBar(title: Text("Log in")),
             body: model.state == ViewState.Busy
                 ? Center(child: CircularProgressIndicator())
-                : _loginView(model, ctx)));
+                : _loginView(model, context)));
   }
 
   Widget _loginView(LoginModel model, BuildContext context) {
@@ -87,6 +89,14 @@ class LoginState extends State<Login> {
                 } else {
                   await provider.forget();
                 }
+              } else {
+                k.currentState.showSnackBar(
+                  SnackBar(
+                    content: Text("Wrong email or password",
+                        style: TextStyle(color: Colors.white)),
+                    backgroundColor: Colors.red,
+                  ),
+                );
               }
             }
           },
@@ -135,6 +145,7 @@ class LoginState extends State<Login> {
             }
           } else {
             emailController.text = "";
+            passwordController.text = "";
           }
 
           return TextFormField(

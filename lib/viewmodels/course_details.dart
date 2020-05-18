@@ -18,7 +18,7 @@ class CourseViewModel extends BaseModel {
     setState(ViewState.Idle);
   }
 
-  addStudent(String username, String token, int courseId) async {
+  Future<bool> addStudent(String username, String token, int courseId) async {
     setState(ViewState.Busy);
 
     Person newStudent = await _ps.addStudent(username, token, courseId);
@@ -27,5 +27,7 @@ class CourseViewModel extends BaseModel {
     notifyListeners();
 
     setState(ViewState.Idle);
+
+    return true;
   }
 }

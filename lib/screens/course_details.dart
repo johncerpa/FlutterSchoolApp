@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 
 class CourseDetails extends StatelessWidget {
   final int courseId;
+  GlobalKey<ScaffoldState> _k = GlobalKey<ScaffoldState>();
 
   CourseDetails({this.courseId});
 
@@ -20,6 +21,7 @@ class CourseDetails extends StatelessWidget {
       onModelReady: (model) => getData(context, model),
       builder: (context, model, child) {
         return Scaffold(
+          key: _k,
           appBar: AppBar(title: Text("Course details")),
           body: model.state == ViewState.Busy
               ? Center(child: CircularProgressIndicator())
@@ -110,8 +112,17 @@ class CourseDetails extends StatelessWidget {
   _floatingButton(BuildContext context, CourseViewModel model) {
     var provider = Provider.of<AuthProvider>(context, listen: false);
     return FloatingActionButton(
-        onPressed: () =>
-            model.addStudent(provider.username, provider.token, courseId),
+        onPressed: () {
+          model
+              .addStudent(provider.username, provider.token, courseId)
+              .then((bool val) {
+            _k.currentState.showSnackBar(SnackBar(
+              content: Text("Student was added",
+                  style: TextStyle(color: Colors.white)),
+              backgroundColor: Colors.green,
+            ));
+          });
+        },
         tooltip: 'Add student',
         child: new Icon(Icons.add));
   }

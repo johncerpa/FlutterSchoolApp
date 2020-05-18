@@ -7,15 +7,13 @@ class AuthenticationService {
   User user;
 
   Future<bool> login(String email, String password) async {
-    User fetchedUser = await _api.login(email, password);
-
-    bool hasUser = fetchedUser != null;
-
-    if (hasUser) {
+    try {
+      User fetchedUser = await _api.login(email, password);
       user = fetchedUser;
+      return true;
+    } catch (Exception) {
+      return false;
     }
-
-    return hasUser;
   }
 
   Future<bool> signup(
