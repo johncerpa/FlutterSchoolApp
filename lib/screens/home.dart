@@ -75,7 +75,14 @@ class _HomeState extends State<Home> {
     var provider = Provider.of<AuthProvider>(authContext, listen: false);
     var response = await model.checkToken(provider.token);
     if (!response["valid"]) {
-      Provider.of<AuthProvider>(authContext, listen: false).logout();
+      _k.currentState.showSnackBar(SnackBar(
+          content: Text("Session expired, you will be logged out",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.yellow));
+
+      Future.delayed(const Duration(seconds: 4), () {
+        Provider.of<AuthProvider>(authContext, listen: false).logout();
+      });
     }
   }
 
