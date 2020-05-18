@@ -44,6 +44,7 @@ class CourseDetails extends StatelessWidget {
           backgroundColor: Colors.red));
 
       Future.delayed(Duration(seconds: 3), () {
+        provider.logout();
         Navigator.pop(context);
       });
     }
@@ -79,11 +80,16 @@ class CourseDetails extends StatelessWidget {
                               style: TextStyle(color: Colors.white)),
                         ),
                       ),
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ProfessorDetails(
-                                  professorId: model.course.professor.id,
-                                )));
+                      onTap: () async {
+                        var response =
+                            await Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ProfessorDetails(
+                                      professorId: model.course.professor.id,
+                                    )));
+
+                        if (response == "Error") {
+                          Navigator.pop(context);
+                        }
                       },
                     ),
                   ],
@@ -109,11 +115,16 @@ class CourseDetails extends StatelessWidget {
                   leading: Icon(Icons.person, size: 35),
                   title: Text(elem.name,
                       style: TextStyle(fontWeight: FontWeight.w500)),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => StudentDetails(
-                              studentId: elem.id,
-                            )));
+                  onTap: () async {
+                    var response =
+                        await Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => StudentDetails(
+                                  studentId: elem.id,
+                                )));
+
+                    if (response == "Error") {
+                      Navigator.pop(context);
+                    }
                   },
                 ),
               ),
@@ -141,6 +152,11 @@ class CourseDetails extends StatelessWidget {
                     style: TextStyle(color: Colors.white)),
                 backgroundColor: Colors.red,
               ));
+
+              Future.delayed(Duration(seconds: 3), () {
+                provider.logout();
+                Navigator.pop(context);
+              });
             }
           });
         },

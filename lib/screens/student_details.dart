@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 class StudentDetails extends StatelessWidget {
   final int studentId;
+  final GlobalKey<ScaffoldState> _k = GlobalKey<ScaffoldState>();
 
   StudentDetails({this.studentId});
 
@@ -18,6 +19,7 @@ class StudentDetails extends StatelessWidget {
       onModelReady: (model) => getData(context, model),
       builder: (context, model, child) {
         return Scaffold(
+          key: _k,
           appBar: AppBar(
             title: Text("Student details"),
           ),
@@ -25,7 +27,11 @@ class StudentDetails extends StatelessWidget {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : _studentDetails(context, model.person),
+              : model.person != null
+                  ? _studentDetails(context, model.person)
+                  : Center(
+                      child: CircularProgressIndicator(),
+                    ),
         );
       },
     );
@@ -46,94 +52,108 @@ class StudentDetails extends StatelessWidget {
                 height: 20.0,
               ),
               Container(
-          margin: const EdgeInsets.only(left: 20.0),
-          child: Align(
-              alignment: Alignment
-                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                margin: const EdgeInsets.only(left: 20.0),
+                child: Align(
+                    alignment: Alignment
+                        .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
 
-              child: Align(
-                alignment: Alignment
-                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-                child: Text("Email: ${student.email}"),
-              )),
-        ),
-        SizedBox(
-          height: 20.0,
-        ),
-        Container(
-          margin: const EdgeInsets.only(left: 20.0),
-          child: Align(
-              alignment: Alignment
-                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-              child: Align(
-                alignment: Alignment
-                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-                child: Text("Username: ${student.username}"),
-              )),
-        ),
-        SizedBox(
-          height: 20.0,
-        ),
-        Container(
-          margin: const EdgeInsets.only(left: 20.0),
-          child: Align(
-              alignment: Alignment
-                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-              child: Align(
-                alignment: Alignment
-                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-                child: Text("Phone: ${student.phone}"),
-              )),
-        ),
-        SizedBox(
-          height: 20.0,
-        ),
-        Container(
-          margin: const EdgeInsets.only(left: 20.0),
-          child: Align(
-              alignment: Alignment
-                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-              child: Align(
-                alignment: Alignment
-                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-                child: Text("City: ${student.city}"),
-              )),
-        )
-        ,
-        SizedBox(
-          height: 20.0,
-        ),
-       Container(
-          margin: const EdgeInsets.only(left: 20.0),
-          child: Align(
-              alignment: Alignment
-                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-              child: Align(
-                alignment: Alignment
-                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-                child: Text("Country: ${student.country}"),
-              )),
-        ),
-        SizedBox(
-          height: 20.0,
-        ),
-        Container(
-          margin: const EdgeInsets.only(left: 20.0),
-          child: Align(
-              alignment: Alignment
-                  .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-              child: Align(
-                alignment: Alignment
-                    .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
-                child: Text("Birthday: ${student.birthday}"),
-              )),
-        ) ],
+                    child: Align(
+                      alignment: Alignment
+                          .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                      child: Text("Email: ${student.email}"),
+                    )),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20.0),
+                child: Align(
+                    alignment: Alignment
+                        .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                    child: Align(
+                      alignment: Alignment
+                          .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                      child: Text("Username: ${student.username}"),
+                    )),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20.0),
+                child: Align(
+                    alignment: Alignment
+                        .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                    child: Align(
+                      alignment: Alignment
+                          .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                      child: Text("Phone: ${student.phone}"),
+                    )),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20.0),
+                child: Align(
+                    alignment: Alignment
+                        .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                    child: Align(
+                      alignment: Alignment
+                          .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                      child: Text("City: ${student.city}"),
+                    )),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20.0),
+                child: Align(
+                    alignment: Alignment
+                        .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                    child: Align(
+                      alignment: Alignment
+                          .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                      child: Text("Country: ${student.country}"),
+                    )),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20.0),
+                child: Align(
+                    alignment: Alignment
+                        .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                    child: Align(
+                      alignment: Alignment
+                          .bottomLeft, // Align however you like (i.e .centerRight, centerLeft)
+                      child: Text("Birthday: ${student.birthday}"),
+                    )),
+              )
+            ],
           )),
     ));
   }
 
-  getData(BuildContext context, PersonViewModel model) {
+  getData(BuildContext context, PersonViewModel model) async {
     var provider = Provider.of<AuthProvider>(context, listen: false);
-    model.studentDetails(provider.username, provider.token, studentId);
+
+    var success = await model.studentDetails(
+        provider.username, provider.token, studentId);
+
+    if (!success) {
+      _k.currentState.showSnackBar(SnackBar(
+          content: Text("Session expired, log in again",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.red));
+
+      Future.delayed(Duration(seconds: 3), () {
+        provider.logout();
+        Navigator.pop(context, "Error");
+      });
+    }
   }
 }

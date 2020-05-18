@@ -8,15 +8,32 @@ class PersonViewModel extends BaseModel {
   Person _person;
   Person get person => _person;
 
-  professorDetails(String username, String token, int professorId) async {
+  Future<bool> professorDetails(
+      String username, String token, int professorId) async {
     setState(ViewState.Busy);
-    _person = await _ps.professorDetails(username, token, professorId);
+    bool success = true;
+    try {
+      _person = await _ps.professorDetails(username, token, professorId);
+    } catch (Exception) {
+      success = false;
+    }
+
     setState(ViewState.Idle);
+
+    return success;
   }
 
-  studentDetails(String username, String token, int studentId) async {
+  Future<bool> studentDetails(
+      String username, String token, int studentId) async {
     setState(ViewState.Busy);
-    _person = await _ps.studentDetails(username, token, studentId);
+    bool success = true;
+    try {
+      _person = await _ps.studentDetails(username, token, studentId);
+    } catch (Exception) {
+      success = false;
+    }
     setState(ViewState.Idle);
+
+    return success;
   }
 }
