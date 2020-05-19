@@ -29,7 +29,6 @@ class LoginState extends State<Login> {
   }
 
   Widget _loginView(LoginModel model, BuildContext context) {
-    if (rememberMe) {}
     return Center(
         child: Container(
       margin: new EdgeInsets.only(left: 20.0, right: 20.0),
